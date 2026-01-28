@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Triángulo - WebGL 2</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #1b1e2b;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="glcanvas"></canvas>
+
+<script>
+  const canvas = document.getElementById("glcanvas");
+  const gl = canvas.getContext("webgl2");
+
+  if (!gl) {
+    alert("WebGL 2 no soportado");
+  }
+
+  // Tamaño
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  gl.viewport(0, 0, canvas.width, canvas.height);
+
+  // Fondo
+  gl.clearColor(0x1b / 255, 0x1e / 255, 0x2b / 255, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  // === SHADERS ===
+
+  const vertexShaderSource = `#version 300 es
+  in vec2 aPosition;
+  in vec3 aColor;
+
+  out vec3 vColor;
+
+  void main() {
+    vColor = aColor;
+    gl_Position = vec4(aPosition, 0.0, 1.0);
+  }
+  `;
+
+  const fragmentShaderSource = `#version 300 es
+  precision mediump float;
+
+  in vec3 vColor;
+  out vec4 outColor;
+
+  void main() {
+    outColor = vec4(vColor, 1.0);
+  }
+  `;
+
+  function compileShader(type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.error(gl.getShaderInfoLog(shader));
+      gl.deleteShader(shader);
+    }
+    return shader;
+  }
+
+  const vertexShader = compileShader(gl.VERTEX_SHADER, vertexShaderSource);
+  const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+  // === PROGRAMA ===
+
+  const program = gl.createProgram();
+  gl.attachShader(program, vertexShader);
+  gl.attachShader(program, fragmentShader);
+  gl.linkProgram(program);
+
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.error(gl.getProgramInfoLog(program));
+  }
+
+  gl.useProgram(program);
+
+  // === DATOS ===
+
+  const vertices = new Float32Array([
+    // x, y,       r, g, b
+    -0.5, -0.5,   1, 0, 0,
+     0.5, -0.5,   0, 1, 0,
+     0.0,  0.87,  0, 0, 1
+  ]);
+
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+
+  const buffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+  const stride = 5 * Float32Array.BYTES_PER_ELEMENT;
+
+  const posLoc = gl.getAttribLocation(program, "aPosition");
+  gl.enableVertexAttribArray(posLoc);
+  gl.vertexAttribPointer(
+    posLoc,
+    2,
+    gl.FLOAT,
+    false,
+    stride,
+    0
+  );
+
+  const colorLoc = gl.getAttribLocation(program, "aColor");
+  gl.enableVertexAttribArray(colorLoc);
+  gl.vertexAttribPointer(
+    colorLoc,
+    3,
+    gl.FLOAT,
+    false,
+    stride,
+    2 * Float32Array.BYTES_PER_ELEMENT
+  );
+
+  // === DIBUJO ===
+
+  gl.bindVertexArray(vao);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Triángulo - Three.js</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #1b1e2b;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<script type="module">
+  // 1. Importamos Three.js desde CDN
+  import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+  // 2. Creamos la escena
+  const scene = new THREE.Scene();
+
+  // 3. Cámara (ortográfica, más simple para este caso)
+  const camera = new THREE.OrthographicCamera(
+    -1, 1, 1, -1, 0.1, 10
+  );
+  camera.position.z = 1;
+
+  // 4. Renderer
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x1b1e2b);
+  document.body.appendChild(renderer.domElement);
+
+  // 5. Geometría del triángulo (3 vértices)
+  const geometry = new THREE.BufferGeometry();
+
+  const positions = new Float32Array([
+    -0.5, -0.5, 0.0,   // vértice rojo
+     0.5, -0.5, 0.0,   // vértice verde
+     0.0,  0.87, 0.0   // vértice azul
+  ]);
+
+  const colors = new Float32Array([
+    1.0, 0.0, 0.0,   // rojo
+    0.0, 1.0, 0.0,   // verde
+    0.0, 0.0, 1.0    // azul
+  ]);
+
+  geometry.setAttribute('position',
+    new THREE.BufferAttribute(positions, 3)
+  );
+
+  geometry.setAttribute('color',
+    new THREE.BufferAttribute(colors, 3)
+  );
+
+  // 6. Material que usa colores por vértice
+  const material = new THREE.MeshBasicMaterial({
+    vertexColors: true
+  });
+
+  // 7. Malla (geometría + material)
+  const triangle = new THREE.Mesh(geometry, material);
+  scene.add(triangle);
+
+  // 8. Render
+  renderer.render(scene, camera);
+</script>
+
+</body>
+</html>
