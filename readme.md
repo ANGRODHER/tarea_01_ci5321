@@ -15,17 +15,18 @@ Implementación de un triángulo equilátero con colores RGB utilizando tres niv
 ## Cómo ejecutar los ejemplos
 
 ### WebGL 2
-1. Abrir  `webgl2.html`
+Abrir  `webgl2.html`
 
 
 
 ### TWGL
-1. Abrir  `twgl.html`
+Abrir  `twgl.html`
 
 
 
 ### Three.js
-1. Abrir  `threejs.html`
+Abrir  `threejs.html`
 
 
 > Nota: No se recomienda abrir los archivos directamente con doble clic debido a restricciones de seguridad del navegador.
+
